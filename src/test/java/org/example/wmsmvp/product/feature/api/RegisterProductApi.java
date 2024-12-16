@@ -2,6 +2,7 @@ package org.example.wmsmvp.product.feature.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.example.wmsmvp.common.Scenario;
 import org.example.wmsmvp.product.domain.Category;
 import org.example.wmsmvp.product.domain.TemperatureZone;
 import org.example.wmsmvp.product.feature.RegisterProduct;
@@ -82,7 +83,7 @@ public class RegisterProductApi {
         return this;
     }
 
-    public void request() {
+    public Scenario request() {
         RegisterProduct.Request request = new RegisterProduct.Request(
                 name,
                 code,
@@ -99,7 +100,8 @@ public class RegisterProductApi {
         );
 
         //when
-//        registerProduct.request(request);
         RestAssured.given().log().all().contentType(ContentType.JSON).body(request).when().post("/products").then().log().all().statusCode(HttpStatus.CREATED.value());
+
+        return new Scenario();
     }
 }
