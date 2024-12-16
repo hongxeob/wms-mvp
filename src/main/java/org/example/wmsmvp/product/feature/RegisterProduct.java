@@ -1,5 +1,6 @@
 package org.example.wmsmvp.product.feature;
 
+import org.example.wmsmvp.product.domain.*;
 import org.springframework.util.Assert;
 
 public class RegisterProduct {

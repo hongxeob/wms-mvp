@@ -1,9 +1,11 @@
 package org.example.wmsmvp.product.feature;
 
+import org.example.wmsmvp.product.domain.Category;
+import org.example.wmsmvp.product.domain.ProductRepository;
+import org.example.wmsmvp.product.domain.TemperatureZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

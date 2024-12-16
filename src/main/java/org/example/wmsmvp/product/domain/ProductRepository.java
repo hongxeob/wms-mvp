@@ -1,4 +1,4 @@
-package org.example.wmsmvp.product.feature;
+package org.example.wmsmvp.product.domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;

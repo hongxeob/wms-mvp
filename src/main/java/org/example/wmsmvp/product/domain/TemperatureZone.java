@@ -1,4 +1,4 @@
-package org.example.wmsmvp.product.feature;
+package org.example.wmsmvp.product.domain;
 
 public enum TemperatureZone {
     ROOM_TEMPERATURE("상온"),
