@@ -1,19 +1,53 @@
 package org.example.wmsmvp.product.domain;
 
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
+@Entity
+@Comment("상품")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "product")
+@Getter
 public class Product {
-    private Long id;
-    private final String name;
-    private final String code;
-    private final String description;
-    private final String brand;
-    private final String maker;
-    private final String origin;
-    private final Category category;
-    private final TemperatureZone temperatureZone;
-    private final Long weightInGrams;
-    private final ProductSize productSize;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "product_no")
+    @Comment("상품 번호")
+    private Long productNo;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false, updatable = true)
+    private String code;
+
+    @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false)
+    private String brand;
+
+    @Column(nullable = false)
+    private String maker;
+    @Column(nullable = false)
+    private String origin;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
+    @Column(name = "temperature_zone", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TemperatureZone temperatureZone;
+    @Column(nullable = false)
+    private Long weightInGrams;
+
+    @Embedded
+    private ProductSize productSize;
 
     public Product(
             String name,
@@ -53,13 +87,5 @@ public class Product {
         Assert.notNull(weightInGrams, "무게는 필수입니다.");
         Assert.isTrue(weightInGrams > 0, "무게는 0보다 커야 합니다.");
         Assert.notNull(productSize, "상품 크기는 필수 입니다.");
-    }
-
-    public void assignId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
     }
 }

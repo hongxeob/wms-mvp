@@ -26,5 +26,4 @@ public class RegisterProductTest extends ApiTest {
         //then
         assertThat(productRepository.findAll()).hasSize(1);
     }
-
 }
