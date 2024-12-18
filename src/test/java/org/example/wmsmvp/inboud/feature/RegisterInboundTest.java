@@ -1,7 +1,7 @@
 package org.example.wmsmvp.inboud.feature;
 
 import org.example.wmsmvp.inboud.domain.InboundRepository;
-import org.example.wmsmvp.product.domain.*;
+import org.example.wmsmvp.product.domain.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,6 @@ import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public class RegisterInboundTest {
 
@@ -27,22 +26,8 @@ public class RegisterInboundTest {
     @Test
     @DisplayName("입고를 등록한다.")
     void testRegisterInbound() {
-        final Product product = new Product(
-                "name",
-                "code",
-                "description",
-                "brand",
-                "maker",
-                "origin",
-                Category.ELECTRONICS,
-                TemperatureZone.ROOM_TEMPERATURE,
-                1000L,
-                new ProductSize(
-                        100L,
-                        100L,
-                        100L
-                ));
-        Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(product));
+        Mockito.when(productRepository.getBy(Mockito.anyLong()))
+                .thenReturn(ProductFixture.aProduct().build());
 
         LocalDateTime orderRequestedAt = LocalDateTime.now();
         LocalDateTime estimatedArrivalAt = LocalDateTime.now().plusDays(1);
