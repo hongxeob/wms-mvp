@@ -54,8 +54,6 @@ public class RegisterInbound {
     public record Request(
             @NotBlank(message = "입고 제목은 필수 입니다.")
             String title,
-            @NotBlank(message = "입고 내용은 필수입니다.")
-            String content,
             @NotBlank(message = "입고 설명은 필수입니다.")
             String description,
             @NotNull(message = "주문 요청 시간은 필수입니다.")
