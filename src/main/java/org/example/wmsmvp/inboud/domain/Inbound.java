@@ -42,6 +42,11 @@ public class Inbound {
     @OneToMany(mappedBy = "inbound", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private final List<InboundItem> inboundItems = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    @Comment("입고 진행 상태")
+    private InboundStatus status = InboundStatus.REQUESTED;
+
     public Inbound(
             final String title,
             final String description,
@@ -68,5 +73,12 @@ public class Inbound {
                 "예상 도착 시간은 주문 요청 시간보다 이후여야 합니다.");
         Assert.notNull(inboundItems, "입고 품목 목록은 필수입니다.");
         Assert.notEmpty(inboundItems, "입고 품목은 최소 1개 이상이어야 합니다.");
+    }
+
+    public void confirmed() {
+        if (status != InboundStatus.REQUESTED) {
+            throw new IllegalArgumentException("입고 요청 상태가 아닙니다.");
+        }
+        status = InboundStatus.CONFIRMED;
     }
 }
