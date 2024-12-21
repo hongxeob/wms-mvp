@@ -76,9 +76,13 @@ public class Inbound {
     }
 
     public void confirmed() {
+        validateConfirmStatus();
+        status = InboundStatus.CONFIRMED;
+    }
+
+    private void validateConfirmStatus() {
         if (status != InboundStatus.REQUESTED) {
             throw new IllegalArgumentException("입고 요청 상태가 아닙니다.");
         }
-        status = InboundStatus.CONFIRMED;
     }
 }
