@@ -1,5 +1,6 @@
 package org.example.wmsmvp.inboud.domain;
 
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -62,5 +63,17 @@ public class InboundItem {
         Assert.notNull(unitPrice, "단가는 필수입니다.");
         Assert.isTrue(unitPrice >= 0, "단가는 0 이상이어야 합니다.");
         Assert.hasText(description, "설명은 필수입니다.");
+    }
+
+    @VisibleForTesting
+    InboundItem(
+            final Long inboundItemNo,
+            final Product product,
+            final Long quantity,
+            final Long unitPrice,
+            final String description
+    ) {
+        this(product, quantity, unitPrice, description);
+        this.inboundItemNo = inboundItemNo;
     }
 }

@@ -1,5 +1,6 @@
 package org.example.wmsmvp.inboud.domain;
 
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -64,15 +65,18 @@ public class Inbound {
         }
     }
 
-    private void validateConstructor(final String title, final String description, final LocalDateTime orderRequestedAt, final LocalDateTime estimatedArrivalAt, final List<InboundItem> inboundItems) {
-        Assert.hasText(title, "입고 제목은 필수입니다.");
-        Assert.hasText(description, "입고 설명은 필수입니다.");
-        Assert.notNull(orderRequestedAt, "주문 요청 시간은 필수입니다.");
-        Assert.notNull(estimatedArrivalAt, "예상 도착 시간은 필수입니다.");
-        Assert.isTrue(orderRequestedAt.isBefore(estimatedArrivalAt),
-                "예상 도착 시간은 주문 요청 시간보다 이후여야 합니다.");
-        Assert.notNull(inboundItems, "입고 품목 목록은 필수입니다.");
-        Assert.notEmpty(inboundItems, "입고 품목은 최소 1개 이상이어야 합니다.");
+    @VisibleForTesting
+    Inbound(
+            final Long inboundNo,
+            final String title,
+            final String description,
+            final LocalDateTime orderRequestedAt,
+            final LocalDateTime estimatedArrivalAt,
+            final List<InboundItem> inboundItems,
+            final InboundStatus status) {
+        this(title, description, orderRequestedAt, estimatedArrivalAt, inboundItems);
+        this.inboundNo = inboundNo;
+        this.status = status;
     }
 
     public void confirmed() {
@@ -84,5 +88,16 @@ public class Inbound {
         if (status != InboundStatus.REQUESTED) {
             throw new IllegalArgumentException("입고 요청 상태가 아닙니다.");
         }
+    }
+
+    private void validateConstructor(final String title, final String description, final LocalDateTime orderRequestedAt, final LocalDateTime estimatedArrivalAt, final List<InboundItem> inboundItems) {
+        Assert.hasText(title, "입고 제목은 필수입니다.");
+        Assert.hasText(description, "입고 설명은 필수입니다.");
+        Assert.notNull(orderRequestedAt, "주문 요청 시간은 필수입니다.");
+        Assert.notNull(estimatedArrivalAt, "예상 도착 시간은 필수입니다.");
+        Assert.isTrue(orderRequestedAt.isBefore(estimatedArrivalAt),
+                "예상 도착 시간은 주문 요청 시간보다 이후여야 합니다.");
+        Assert.notNull(inboundItems, "입고 품목 목록은 필수입니다.");
+        Assert.notEmpty(inboundItems, "입고 품목은 최소 1개 이상이어야 합니다.");
     }
 }
