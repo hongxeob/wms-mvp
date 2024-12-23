@@ -48,6 +48,10 @@ public class Inbound {
     @Comment("입고 진행 상태")
     private InboundStatus status = InboundStatus.REQUESTED;
 
+    @Comment("반려 사유")
+    @Column(name = "rejection_reason")
+    private String rejectionReason;
+
     public Inbound(
             final String title,
             final String description,
@@ -82,6 +86,19 @@ public class Inbound {
     public void confirmed() {
         validateConfirmStatus();
         status = InboundStatus.CONFIRMED;
+    }
+
+    public void reject(final String rejectionReason) {
+        validateRejectStatus(rejectionReason);
+        status = InboundStatus.REJECTED;
+        this.rejectionReason = rejectionReason;
+    }
+
+    private void validateRejectStatus(final String rejectionReason) {
+        Assert.hasText(rejectionReason, "반려 사유는 필수입니다.");
+        if (status != InboundStatus.REQUESTED) {
+            throw new IllegalArgumentException("입고 요청 상태가 아닙니다.");
+        }
     }
 
     private void validateConfirmStatus() {
