@@ -16,4 +16,8 @@ public class Scenario {
     public ConfirmInboundApi confirmInboundApi() {
         return new ConfirmInboundApi();
     }
+
+    public RejectInboundApi rejectInboundApi() {
+        return new RejectInboundApi();
+    }
 }
