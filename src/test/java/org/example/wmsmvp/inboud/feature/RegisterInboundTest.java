@@ -16,8 +16,8 @@ public class RegisterInboundTest extends ApiTest {
     @Test
     @DisplayName("입고를 등록한다.")
     void testRegisterInbound() {
-        Scenario.registerProductApi().request()
-                .registerInboundApi().request();
+        Scenario.registerProduct().request()
+                .registerInbound().request();
 
         assertThat(inboundRepository.findAll()).hasSize(1);
     }

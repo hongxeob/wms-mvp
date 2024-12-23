@@ -19,9 +19,9 @@ public class ConfirmInboundTest extends ApiTest {
     @DisplayName("입고를 승인한다.")
     void confirmInbound() throws Exception {
         //given
-        Scenario.registerProductApi().request()
-                .registerInboundApi().request()
-                .confirmInboundApi().request();
+        Scenario.registerProduct().request()
+                .registerInbound().request()
+                .confirmInbound().request();
 
         //when
         final Inbound inbound = inboundRepository.getBy(1L);

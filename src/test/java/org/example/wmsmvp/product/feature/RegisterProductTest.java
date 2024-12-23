@@ -21,7 +21,7 @@ public class RegisterProductTest extends ApiTest {
     void registerProduct() throws Exception {
 
         //given -> when
-        Scenario.registerProductApi().request();
+        Scenario.registerProduct().request();
 
         //then
         assertThat(productRepository.findAll()).hasSize(1);

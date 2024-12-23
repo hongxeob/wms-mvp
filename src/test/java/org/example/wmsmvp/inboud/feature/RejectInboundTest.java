@@ -22,9 +22,9 @@ public class RejectInboundTest extends ApiTest {
 
         //given
 
-        Scenario.registerProductApi().request()
-                .registerInboundApi().request()
-                .rejectInboundApi().request();
+        Scenario.registerProduct().request()
+                .registerInbound().request()
+                .rejectInbound().request();
 
         //when
         final Inbound inbound = inboundRepository.getBy(1L);
