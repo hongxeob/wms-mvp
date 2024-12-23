@@ -13,7 +13,7 @@ class InboundTest {
     void confirmed() throws Exception {
 
         //given
-        final Inbound inbound = InboundFixture.anInboundWithConfirmed().build();
+        final Inbound inbound = InboundFixture.anInbound().build();
         final InboundStatus beforeStatus = inbound.getStatus();
 
         //when
@@ -32,7 +32,6 @@ class InboundTest {
         final Inbound inbound = InboundFixture.anInboundWithConfirmed().build();
 
         //when -> then
-        inbound.confirmed();
         assertThatThrownBy(() -> {
             inbound.confirmed();
         }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("입고 요청 상태가 아닙니다.");

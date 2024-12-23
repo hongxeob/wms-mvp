@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class InboundFixture {
-     private Long inboundNo = 1L;
+    private Long inboundNo = 1L;
     private String title = "상품명";
     private String description = "상품코드";
     private LocalDateTime orderRequestedAt = LocalDateTime.now();
