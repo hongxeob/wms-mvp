@@ -1,4 +1,4 @@
-package org.example.wmsmvp.inboud.feature;
+package org.example.wmsmvp.inboud.feature.api;
 
 import io.restassured.RestAssured;
 import org.example.wmsmvp.common.Scenario;
