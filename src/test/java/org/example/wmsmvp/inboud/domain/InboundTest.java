@@ -3,6 +3,8 @@ package org.example.wmsmvp.inboud.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.example.wmsmvp.inboud.domain.InboundFixture.anInbound;
@@ -68,5 +70,23 @@ class InboundTest {
         assertThatThrownBy(() -> {
             inbound.reject(rejectionReason);
         }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("입고 요청 상태가 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("LPN")
+    void registerLPN() throws Exception {
+
+        //given
+        final Inbound inbound = InboundFixture.anInboundWithConfirmed().build();
+
+        final long inboundItemNo = 1L;
+        final LocalDateTime expirationAt = LocalDateTime.now().plusDays(1);
+        final String lpnBarcode = "LPN-1234";
+
+        //when
+        inbound.registerLPN(inboundItemNo, lpnBarcode, expirationAt);
+
+        //then
+
     }
 }
