@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -73,7 +74,7 @@ class InboundTest {
     }
 
     @Test
-    @DisplayName("LPN")
+    @DisplayName("LPN 등록 - 성공")
     void registerLPN() throws Exception {
 
         //given
@@ -87,6 +88,42 @@ class InboundTest {
         inbound.registerLPN(inboundItemNo, lpnBarcode, expirationAt);
 
         //then
+        final InboundItem inboundItem = inbound.testingGetInboundItemBy(inboundItemNo);
+        final List<LPN> lpns = inboundItem.getLpnList();
+        assertThat(lpns).hasSize(1);
+    }
 
+    @Test
+    @DisplayName("LPN 등록 - 실패 - 입고 확정 상태가 아님.")
+    void fail_invalid_status_registerLPN() throws Exception {
+
+        //given
+        final Inbound inbound = InboundFixture.anInbound().build();
+
+        final long inboundItemNo = 1L;
+        final LocalDateTime expirationAt = LocalDateTime.now().plusDays(1);
+        final String lpnBarcode = "LPN-1234";
+
+        //when -> then
+        assertThatThrownBy(() -> {
+            inbound.registerLPN(inboundItemNo, lpnBarcode, expirationAt);
+        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("입고 확정 상태가 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("LPN 등록 - 실패 - 유통기한이 현재 시간보다 이전인 경우")
+    void fail_invalid_expiration_date_registerLPN() throws Exception {
+
+        //given
+        final Inbound inbound = InboundFixture.anInboundWithConfirmed().build();
+
+        final long inboundItemNo = 1L;
+        final LocalDateTime expirationAt = LocalDateTime.now().minusDays(1);
+        final String lpnBarcode = "LPN-1234";
+
+        //when -> then
+        assertThatThrownBy(() -> {
+            inbound.registerLPN(inboundItemNo, lpnBarcode, expirationAt);
+        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("유통기한은 현재 시간보다 이후여야 합니다.");
     }
 }

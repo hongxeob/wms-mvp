@@ -1,5 +1,7 @@
 package org.example.wmsmvp.inboud.feature;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.example.wmsmvp.common.ApiTest;
 import org.example.wmsmvp.common.Scenario;
 import org.example.wmsmvp.inboud.domain.Inbound;
@@ -9,6 +11,7 @@ import org.example.wmsmvp.inboud.domain.LPN;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -37,17 +40,20 @@ public class RegisterLPNTest extends ApiTest {
         final String lpnBarcode = "LPN-1234";
         final LocalDateTime expirationAt = LocalDateTime.now().plusDays(1);
         RegisterLPN.Request request = new RegisterLPN.Request(
-                inboundItemNo,
                 lpnBarcode,
                 expirationAt
         );
-
         //when
-        registerLPN.request(request);
+        RestAssured.given().log().all()
+                .body(request)
+                .contentType(ContentType.JSON)
+                .when().post("/inbounds/inbound-items/{inboundItemNo}/lpns", inboundItemNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
 
-        final Inbound inbound = inboundRepository.findByInboundItemNo(inboundItemNo).get();
 
         //then
+        final Inbound inbound = inboundRepository.findByInboundItemNo(inboundItemNo).get();
         final InboundItem inboundItem = inbound.testingGetInboundItemBy(inboundItemNo);
         final List<LPN> lpnList = inboundItem.getLpnList();
         assertThat(lpnList.size()).isEqualTo(1);
