@@ -9,6 +9,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.example.wmsmvp.inboud.domain.InboundFixture.anInbound;
+import static org.example.wmsmvp.inboud.domain.InboundFixture.anInboundWithConfirmed;
 
 class InboundTest {
 
@@ -33,7 +34,7 @@ class InboundTest {
     void fail_invalid_status_confirmed() throws Exception {
 
         //given
-        final Inbound inbound = InboundFixture.anInboundWithConfirmed().build();
+        final Inbound inbound = anInboundWithConfirmed().build();
 
         //when -> then
         assertThatThrownBy(() -> {
@@ -63,7 +64,7 @@ class InboundTest {
     void fail_invalid_status_rejected() throws Exception {
 
         //given
-        final Inbound inbound = InboundFixture.anInboundWithConfirmed().build();
+        final Inbound inbound = anInboundWithConfirmed().build();
         final String rejectionReason = "반려 사유";
 
 
@@ -78,7 +79,7 @@ class InboundTest {
     void registerLPN() throws Exception {
 
         //given
-        final Inbound inbound = InboundFixture.anInboundWithConfirmed().build();
+        final Inbound inbound = anInboundWithConfirmed().build();
 
         final long inboundItemNo = 1L;
         final LocalDateTime expirationAt = LocalDateTime.now().plusDays(1);
@@ -98,16 +99,12 @@ class InboundTest {
     void fail_invalid_status_registerLPN() throws Exception {
 
         //given
-        final Inbound inbound = InboundFixture.anInbound().build();
-
-        final long inboundItemNo = 1L;
-        final LocalDateTime expirationAt = LocalDateTime.now().plusDays(1);
-        final String lpnBarcode = "LPN-1234";
-
-        //when -> then
-        assertThatThrownBy(() -> {
-            inbound.registerLPN(inboundItemNo, lpnBarcode, expirationAt);
-        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("입고 확정 상태가 아닙니다.");
+        assertFailLPNRegister(
+                anInbound().build(),
+                LocalDateTime.now().plusDays(1),
+                "입고 확정 상태가 아닙니다.",
+                IllegalArgumentException.class
+        );
     }
 
     @Test
@@ -115,15 +112,27 @@ class InboundTest {
     void fail_invalid_expiration_date_registerLPN() throws Exception {
 
         //given
-        final Inbound inbound = InboundFixture.anInboundWithConfirmed().build();
+        assertFailLPNRegister(
+                anInboundWithConfirmed().build(),
+                LocalDateTime.now().minusDays(1),
+                "유통기한은 현재 시간보다 이후여야 합니다.",
+                IllegalArgumentException.class
+        );
+    }
+
+    private static void assertFailLPNRegister(
+            final Inbound inbound,
+            final LocalDateTime expirationAt,
+            final String description,
+            final Class<?> exceptionClass
+    ) {
 
         final long inboundItemNo = 1L;
-        final LocalDateTime expirationAt = LocalDateTime.now().minusDays(1);
         final String lpnBarcode = "LPN-1234";
 
         //when -> then
         assertThatThrownBy(() -> {
             inbound.registerLPN(inboundItemNo, lpnBarcode, expirationAt);
-        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("유통기한은 현재 시간보다 이후여야 합니다.");
+        }).isInstanceOf(exceptionClass).hasMessageContaining(description);
     }
 }
