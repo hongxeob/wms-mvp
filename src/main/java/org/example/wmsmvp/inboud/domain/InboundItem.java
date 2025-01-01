@@ -9,10 +9,15 @@ import org.example.wmsmvp.product.domain.Product;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "inbound_item")
 @Comment("입고 상품")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class InboundItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +47,9 @@ public class InboundItem {
     @JoinColumn(name = "inbound_no", nullable = false)
     @Comment("입고 번호")
     private Inbound inbound;
+
+    @OneToMany(mappedBy = "inboundItem", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<LPN> lpnList = new ArrayList<>();
 
     public InboundItem(Product product, Long quantity, Long unitPrice, String description) {
         validateConstructor(product, quantity, unitPrice, description);
@@ -76,4 +84,22 @@ public class InboundItem {
         this(product, quantity, unitPrice, description);
         this.inboundItemNo = inboundItemNo;
     }
+
+    public void registerLPN(
+            final String lpnBarcode,
+            final LocalDateTime expirationAt
+    ) {
+        Assert.hasText(lpnBarcode, "LPN 바코드는 필수입니다.");
+        Assert.notNull(expirationAt, "유통기한은 필수입니다.");
+
+        lpnList.add(newLPN(lpnBarcode, expirationAt));
+    }
+
+    private LPN newLPN(
+            final String lpnBarcode,
+            final LocalDateTime expirationAt
+    ) {
+        return new LPN(lpnBarcode, expirationAt, this);
+    }
+
 }

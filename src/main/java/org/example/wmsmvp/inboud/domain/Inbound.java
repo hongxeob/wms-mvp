@@ -77,7 +77,8 @@ public class Inbound {
             final LocalDateTime orderRequestedAt,
             final LocalDateTime estimatedArrivalAt,
             final List<InboundItem> inboundItems,
-            final InboundStatus status) {
+            final InboundStatus status
+    ) {
         this(title, description, orderRequestedAt, estimatedArrivalAt, inboundItems);
         this.inboundNo = inboundNo;
         this.status = status;
@@ -94,6 +95,36 @@ public class Inbound {
         this.rejectionReason = rejectionReason;
     }
 
+    public void registerLPN(
+            final Long inboundItemNo,
+            final String lpnBarcode,
+            final LocalDateTime expirationAt) {
+        validateRegisterLPN(inboundItemNo, lpnBarcode, expirationAt);
+
+        final InboundItem inboundItem = getInboundItemBy(inboundItemNo);
+        inboundItem.registerLPN(lpnBarcode, expirationAt);
+    }
+
+    private void validateRegisterLPN(
+            final Long inboundItemNo,
+            final String lpnBarcode,
+            final LocalDateTime expirationAt
+    ) {
+        if (status != InboundStatus.CONFIRMED) {
+            throw new IllegalArgumentException("입고 확정 상태가 아닙니다.");
+        }
+
+        Assert.notNull(inboundItemNo, "입고 상품 번호는 필수입니다.");
+        Assert.hasText(lpnBarcode, "LPN 바코드는 필수입니다.");
+        Assert.notNull(expirationAt, "유통기한은 필수입니다.");
+
+        if (expirationAt.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("유통기한은 현재 시간보다 이후여야 합니다.");
+        }
+        final InboundItem inboundItem = getInboundItemBy(inboundItemNo);
+        final List<LPN> lpns = inboundItem.getLpnList();
+    }
+
     private void validateRejectStatus(final String rejectionReason) {
         Assert.hasText(rejectionReason, "반려 사유는 필수입니다.");
         if (status != InboundStatus.REQUESTED) {
@@ -107,7 +138,13 @@ public class Inbound {
         }
     }
 
-    private void validateConstructor(final String title, final String description, final LocalDateTime orderRequestedAt, final LocalDateTime estimatedArrivalAt, final List<InboundItem> inboundItems) {
+    private void validateConstructor(
+            final String title,
+            final String description,
+            final LocalDateTime orderRequestedAt,
+            final LocalDateTime estimatedArrivalAt,
+            final List<InboundItem> inboundItems
+    ) {
         Assert.hasText(title, "입고 제목은 필수입니다.");
         Assert.hasText(description, "입고 설명은 필수입니다.");
         Assert.notNull(orderRequestedAt, "주문 요청 시간은 필수입니다.");
@@ -116,5 +153,20 @@ public class Inbound {
                 "예상 도착 시간은 주문 요청 시간보다 이후여야 합니다.");
         Assert.notNull(inboundItems, "입고 품목 목록은 필수입니다.");
         Assert.notEmpty(inboundItems, "입고 품목은 최소 1개 이상이어야 합니다.");
+    }
+
+    private InboundItem getInboundItemBy(final Long inboundItemNo) {
+        return inboundItems.stream()
+                .filter(ii -> ii.getInboundItemNo().equals(inboundItemNo))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 입고 상품이 없습니다 %d.".formatted(inboundItemNo)));
+    }
+
+    @VisibleForTesting
+    public InboundItem testingGetInboundItemBy(final Long inboundItemNo) {
+        return inboundItems.stream()
+                .filter(ii -> ii.getInboundItemNo().equals(inboundItemNo))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 입고 상품이 없습니다 %d.".formatted(inboundItemNo)));
     }
 }
